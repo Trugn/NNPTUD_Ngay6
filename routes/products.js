@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 let productModel = require('../schemas/products');//dbContext
 const { default: slugify } = require('slugify');
+let inventoryController = require('../controllers/inventory');
 
 /* GET users listing. */
 router.get('/', async function (req, res, next) {
@@ -61,6 +62,10 @@ router.post('/', async function (req, res, next) {
     images: req.body.images
   });
   await newProduct.save();
+  
+  // Tự động tạo inventory khi tạo product mới
+  await inventoryController.CreateInventory(newProduct._id);
+  
   res.send(newProduct)
 })
 router.put('/:id', async function (req, res, next) {
